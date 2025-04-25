@@ -1,8 +1,5 @@
 <?php
-$name = $_POST["name"];
-$email = $_POST["email"];
-$psw = $_POST["psw"];
-$pswRepeat = $_POST["psw-repeat"];
+
 
 
 function IsValidateForm(): array
@@ -25,13 +22,22 @@ function IsValidateForm(): array
         $email = $_POST["email"];
 
         if (strlen($email) <= 2) {
-            $errors['email'] = "email должен быть больше 2 символов" . "\n";
+            $errors['email'] = "email должен быть больше 2 символов";
         } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors ['email'] = "email некорректный" . "\n";
+            $errors['email'] = "email некорректный";
+        } else {
+            $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
+            $stmt->execute([':email' => $email]);
+            $count = $stmt->fetchColumn();
+            if ($count > 0) {
+                $errors['email'] = "Пользователь с таким email уже существует";
+            }
         }
     } else {
         $errors["email"] = "Email должен быть заполнен";
     }
+
 
     if (isset($_POST["psw"])) {
         $psw = $_POST["psw"];
@@ -57,18 +63,22 @@ function IsValidateForm(): array
 
 }
 
-$errors = IsValidateForm();
+[$errors, $formData] = IsValidateForm();
 
 
 
 if(empty($errors)) {
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $psw = $_POST["psw"];
+    $pswRepeat = $_POST["psw-repeat"];
 
     $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
 
-    password_hush($psw, PASSWORD_DEFAULT);
+    $passwordHash = password_hash($psw, PASSWORD_DEFAULT);
 
     $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :psw)");
-    $stmt->execute([':name' => $name, ':email' => $email, ':psw' => $psw]);
+    $stmt->execute([':name' => $name, ':email' => $email, ':psw' => $passwordHash ]);
 
 
     $result = $pdo->prepare("SELECT * FROM users WHERE email = :email;");
@@ -85,4 +95,3 @@ if(empty($errors)) {
 
 require_once './registration_form.php';
 ?>
-
