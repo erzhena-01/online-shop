@@ -15,7 +15,7 @@ function IsValidateForm(): array
             $errors['name'] = "Имя должно быть больше 2 символов";
         }
     } else {
-        $errors["name"] = "Имя должно быть заполнено";
+        $errors['name'] = "Имя должно быть заполнено";
     }
 
     if (isset($_POST["email"])) {
@@ -39,31 +39,28 @@ function IsValidateForm(): array
     }
 
 
-    if (isset($_POST["psw"])) {
-        $psw = $_POST["psw"];
+    if (isset($_POST['psw'])) {
+        $psw = $_POST['psw'];
 
         if (strlen($psw) <= 2) {
             $errors['psw'] = "Пароль должен быть больше 2 символов";
         }
-    } else {
-        $errors["psw"] = "Пароль должен быть заполнен";
-    }
 
-    if (isset($_POST["psw-repeat"])) {
-        $pswRepeat = $_POST["psw-repeat"];
+        $pswRepeat = $_POST['psw-repeat'];
 
         if ($psw !== $pswRepeat) {
             $errors['psw-repeat'] = "Пароль не соответствует" . "\n";
         }
     } else {
-        $errors["psw-repeat"] = "Пароль должен быть заполнен";
+        $errors['psw'] = "Пароль должен быть заполнен";
     }
 
-    return [$errors, ['name' => $name, 'email' => $email, 'psw' => $psw]];
 
+
+    return $errors;
 }
 
-[$errors, $formData] = IsValidateForm();
+$errors = IsValidateForm($_POST);
 
 
 

@@ -11,7 +11,7 @@
 <div class="login-page">
     <div class="form">
 
-        <form class="register-form" action="handle_register.php" method="POST">
+        <form class="register-form" action="hrf.php" method="POST">
             <input type="text" name="name" placeholder="username"/>
             <input type="password" name="password" placeholder="password"/>
             <input type="text" name="email" placeholder="email address"/>
