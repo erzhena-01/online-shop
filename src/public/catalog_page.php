@@ -1,4 +1,7 @@
 <div class="container">
+    <a href="/profile">Мой профиль</a>
+    <a href="/cart" style="float: right;">Корзина 🛒</a>
+
     <h3>Catalog</h3>
     <div class="card-deck">
         <?php foreach ($products as $product): ?>
@@ -14,24 +17,16 @@
                         <div class="card-footer">
                             <?php echo $product['price'];?>
                         </div>
+                        <form method="post" action="/add_product" style="margin-top: 10px;">
+                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                            <input type="number" name="amount" value="1" min="1" style="width: 60px;">
+                            <button type="submit">Добавить в корзину</button>
+                        </form>
+
                     </div>
                 </a>
             </div>
-            <div class="card text-center">
-                <a href="#">
-                    <div class="card-header">
-                        Hit!
-                    </div>
-                    <img class="card-img-top" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ&s=043d89cbf03cbdbbe8ed9f9e5e44ce6f" alt="Card image">
-                    <div class="card-body">
-                        <p class="card-text text-muted">Category name</p>
-                        <a href="#"><h5 class="card-title">Very long item name</h5></a>
-                        <div class="card-footer">
-                            3000$
-                        </div>
-                    </div>
-                </a>
-            </div>
+
 
         <?php endforeach;?>
 

@@ -1,92 +1,47 @@
 <?php
-$name = $_POST["name"];
-$email = $_POST["email"];
-$psw = $_POST["psw"];
-$pswRepeat = $_POST["psw-repeat"];
 
+$requestUri = $_SERVER['REQUEST_URI'];
+$requestMethod = $_SERVER['REQUEST_METHOD'];
 
-function IsValidateForm(): array
-{
-    $errors = [];
-
-
-
-    if (isset($_POST["name"])) {
-        $name = $_POST["name"];
-
-        if (strlen($name) <= 2) {
-            $errors['name'] = "Имя должно быть больше 2 символов";
-        }
+if ($requestUri === '/registration') {
+    if ($requestMethod === 'GET') {
+        require_once './registration_form.php';
+    } elseif ($requestMethod === 'POST') {
+        require_once './hrf.php';
     } else {
-        $errors["name"] = "Имя должно быть заполнено";
+        echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 
-    if (isset($_POST["email"])) {
-        $email = $_POST["email"];
+} elseif ($requestUri === '/profile') {
+    require_once './profile.php';
 
-        if (strlen($email) <= 2) {
-            $errors['email'] = "email должен быть больше 2 символов" . "\n";
-        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors ['email'] = "email некорректный" . "\n";
-        }
-    } else {
-        $errors["email"] = "Email должен быть заполнен";
+}elseif ($requestUri === '/login') {
+    if ($requestMethod === 'GET') {
+        require_once './login_form.php';
+    } elseif ($requestMethod === 'POST') {
+        require_once './handle_login.php';
     }
 
-    if (isset($_POST["psw"])) {
-        $psw = $_POST["psw"];
+} elseif ($requestUri === '/catalog') {
+    if ($requestMethod === 'GET') {
+        require_once './catalog.php';
+    }
+} elseif ($requestUri === '/edit_profile') {
+        require_once './edit_profile.php';
 
-        if (strlen($psw) <= 2) {
-            $errors['psw'] = "Пароль должен быть больше 2 символов";
-        }
-    } else {
-        $errors["psw"] = "Пароль должен быть заполнен";
+}elseif ($requestUri === '/add_product') {
+    if ($requestMethod === 'GET') {
+        require_once './add_product_form.php';
+    } elseif ($requestMethod === 'POST') {
+        require_once './handle_add_product.php';
     }
 
-    if (isset($_POST["psw-repeat"])) {
-        $pswRepeat = $_POST["psw-repeat"];
-
-        if ($psw !== $pswRepeat) {
-            $errors['psw-repeat'] = "Пароль не соответствует" . "\n";
-        }
-    } else {
-        $errors["psw-repeat"] = "Пароль должен быть заполнен";
+} elseif ($requestUri === '/cart') {
+    if ($requestMethod === 'GET') {
+        require_once './cart.php';
     }
 
-    return [$errors, ['name' => $name, 'email' => $email, 'psw' => $psw]];
-
+} else {
+    http_response_code(404);
+    require_once './404.php';
 }
-
-$errors = IsValidateForm();
-
-
-
-if(empty($errors)) {
-
-    $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
-
-    password_hush($psw, PASSWORD_DEFAULT);
-
-    $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :psw)");
-    $stmt->execute([':name' => $name, ':email' => $email, ':psw' => $psw]);
-
-
-    $result = $pdo->prepare("SELECT * FROM users WHERE email = :email;");
-    $result->execute([':email' => $email]);
-    $data = $result->fetch();
-    print_r($data);
-
-}else{
-
-    print_r($errors);
-
-}
-
-
-require_once './registration_form.php';
-?>
-
-
-
-
-

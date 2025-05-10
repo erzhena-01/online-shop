@@ -2,24 +2,21 @@
 
 $errors = [];
 
-function IsValidateLogin(): array
+function IsValidateLogin(array $data): array
 {
     $errors = [];
 
-    if (isset($_POST['name']) && isset($_POST['password'])) {
-        $name = $_POST['name'];
-        $password = $_POST['password'];
-
-        if (empty($name)) {
-            $errors['name'] = "Имя должно быть заполнено";
-        }
-        if (empty($password)) {
-            $errors['password'] = "Пароль должен быть заполнен";
-        }
+    if (!isset($data['name']) ) {
+        $errors['name'] = "Имя должно быть заполнено";
     }
+
+    if (!isset($data['password'])) {
+        $errors['password'] = "Пароль должен быть заполнен";
+    }
+
     return $errors;
 }
-        $errors = IsValidateLogin();
+$errors = IsValidateLogin($_POST);
 
 
 
@@ -35,20 +32,20 @@ if (empty($errors)) {
 
     if ($user === false) {
         $errors['name'] = 'Username or password incorrect';
-            } else {
-                $passwordDB = $user['password'];
+    } else {
+        $passwordDB = $user['password'];
 
-                if (password_verify($password, $passwordDB)) {
+        if (password_verify($password, $passwordDB)) {
 
-                    session_start();
-                    $_SESSION['user_id'] = $user['id'];
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
 
-                    header("Location: /catalog.php");
-                } else {
-                    $errors['password'] = 'Username or password incorrect';
-                }
-            }
+            header("Location: /catalog");
+        } else {
+            $errors['password'] = 'Username or password incorrect';
         }
+    }
+}
 
 
 require_once './login_form.php';
