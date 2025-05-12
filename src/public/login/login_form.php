@@ -1,5 +1,5 @@
 <?php if (!empty($errors)): ?>
-    <div style="color: red; margin-bottom: 15px;">
+    <div style="color: red;">
         <?php foreach ($errors as $error): ?>
             <p><?php echo $error; ?></p>
         <?php endforeach; ?>
@@ -11,7 +11,7 @@
 <div class="login-page">
     <div class="form">
 
-        <form class="register-form" action="hrf.php" method="POST">
+        <form class="register-form" action="../registration/hrf.php" method="POST">
             <input type="text" name="name" placeholder="username"/>
             <input type="password" name="password" placeholder="password"/>
             <input type="text" name="email" placeholder="email address"/>

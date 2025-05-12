@@ -1,8 +1,23 @@
 <?php
 session_start();
 
-// Получаем корзину из сессии
-$cart = $_SESSION['cart'] ?? [];
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login');
+    exit;
+}
+
+$userId = $_SESSION['user_id'];
+
+function getCart(PDO $pdo, int $userId): array {
+    $stmt = $pdo->prepare(" SELECT product_id, amount  FROM user_products WHERE user_id = :userId");
+
+    $stmt->execute(['userId' => $userId]);
+    return $stmt->fetchAll();
+}
+$pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
+
+$cart = getCart($pdo, $_SESSION['user_id']);
+
 ?>
 
 <!DOCTYPE html>
@@ -71,14 +86,18 @@ $cart = $_SESSION['cart'] ?? [];
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($cart as $productId => $amount): ?>
+        <?php foreach ($cart as $item): ?>
             <tr>
-                <td><?= $productId ?></td>
-                <td><?= (int)$amount ?></td>
+                <td><?= htmlspecialchars($item['product_id']) ?></td>
+                <td><?= (int)$item['amount'] ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
-        <?php endif; ?>
+    </table>
+    <form method="post" action="/clear-cart">
+        <button type="submit" class="clear-btn">Очистить корзину</button>
+    </form>
+<?php endif; ?>
+
 </body>
 </html>
-

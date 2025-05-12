@@ -90,5 +90,5 @@ if(empty($errors)) {
 }
 
 
-require_once './registration_form.php';
+require_once './registration/registration_form.php';
 ?>

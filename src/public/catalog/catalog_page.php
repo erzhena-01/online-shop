@@ -17,7 +17,7 @@
                         <div class="card-footer">
                             <?php echo $product['price'];?>
                         </div>
-                        <form method="post" action="/add_product" style="margin-top: 10px;">
+                        <form method="post" action="/add-product" style="margin-top: 10px;">
                             <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                             <input type="number" name="amount" value="1" min="1" style="width: 60px;">
                             <button type="submit">Добавить в корзину</button>
