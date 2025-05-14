@@ -22,7 +22,7 @@ $errors = IsValidateLogin($_POST);
 
 if (empty($errors)) {
     $name = $_POST['name'];
-    $password = $_POST['password'];
+    $psw = $_POST['psw'];
 
     $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
     $stmt = $pdo->prepare('SELECT * FROM users WHERE name = :name');

@@ -16,6 +16,9 @@
       build: ../online-shop/docker/docker_php
       volumes:
         - /Users/erzenakuriganova/projects/online-shop:/var/www/html
+        - ./docker/docker_php/xdebug.ini:/usr/local/etc/php/conf.d/docker-docker_php-xdebug.ini
+
+
 
 
     postgres:
