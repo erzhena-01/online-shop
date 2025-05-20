@@ -65,7 +65,7 @@ if (empty($errors)) {
 
     }
 
-    header('Location: /cart'); // или путь к вашей странице корзины
+    header('Location: /cart');
     exit;
 
 }

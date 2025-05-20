@@ -4,9 +4,10 @@
       ports:
         - 89:80
       volumes:
-        - /Users/erzenakuriganova/projects/online-shop/docker/nginx.conf:/etc/nginx/conf.d
+        - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
 
-        - /Users/erzenakuriganova/projects/online-shop:/var/www/html
+        - .:/var/www/html
+
       restart: always
       depends_on:
         - php-fpm
@@ -15,8 +16,8 @@
     php-fpm:
       build: ../online-shop/docker/docker_php
       volumes:
-        - /Users/erzenakuriganova/projects/online-shop:/var/www/html
-        - ./docker/docker_php/xdebug.ini:/usr/local/etc/php/conf.d/docker-docker_php-xdebug.ini
+        - .:/var/www/html
+        - ./docker/docker_php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-xdebug.ini
 
 
 
