@@ -1,6 +1,7 @@
 <?php
+namespace Model;
 
-require_once 'Model.php';
+require_once "Model.php";
 class Cart extends Model
 {
     function getUserCart( int $userId): array
@@ -33,4 +34,18 @@ class Cart extends Model
        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId");
        $stmt->execute(['userId' => $userId]);
    }
+
+    protected array $items = [];
+
+    public function getItems(int $userId): array
+    {
+        return $this->getUserCart($userId);
+    }
+
+
+    public function clear(): void
+    {
+        unset($_SESSION['cart']);
+    }
+
 }

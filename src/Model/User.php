@@ -1,4 +1,5 @@
 <?php
+namespace Model;
 
 require_once 'Model.php';
 
@@ -44,7 +45,14 @@ public function getByEmail(string $email): array|false
 
   }
 
-  public function getUserByName(string $name)
+    public function updatePasswordById(string $passwordHash, int $userId)
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET password = :password WHERE id = :userId");
+        $stmt->execute([':password' => $passwordHash, ':userId' => $userId]);
+    }
+
+
+    public function getUserByName(string $name)
   {
       $stmt = $this->pdo->prepare('SELECT * FROM users WHERE name = :name');
       $stmt->execute(['name' => $name]);

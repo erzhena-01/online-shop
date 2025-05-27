@@ -1,5 +1,5 @@
 <?php
-
+namespace Controllers;
 
 
 class UserController
@@ -24,8 +24,8 @@ class UserController
             $passwordHash = password_hash($psw, PASSWORD_DEFAULT);
 
 
-            require_once '../Model/User.php';
-            $userModel = new User();
+
+            $userModel = new \Model\User();
 
 
             $userModel->addUser($name, $email, $passwordHash);
@@ -70,8 +70,8 @@ class UserController
                 $errors['email'] = "email некорректный";
             } else {
 
-                require_once '../Model/User.php';
-                $userModel = new User();
+
+                $userModel = new \Model\User();
                 $user = $userModel->getByEmail($email);
 
                 if ($user !== false) {
@@ -119,8 +119,8 @@ class UserController
             $name = $_POST['name'];
             $password = $_POST['password'];
 
-            require_once '../Model/User.php';
-            $userModel = new User();
+
+            $userModel = new \Model\User();
 
             $user = $userModel->getUserByName($name);
 
@@ -172,8 +172,8 @@ class UserController
         if (isset($_SESSION['user_id'])) {
             $userId = $_SESSION['user_id'];
 
-            require_once '../Model/User.php';
-            $userModel = new User();
+
+            $userModel = new \Model\User();
 
             $user = $userModel->getUserById($userId);
 
@@ -200,8 +200,8 @@ class UserController
                 $email = $_POST['email'];
                 $userId = $_SESSION['user_id'];
 
-                require_once '../Model/User.php';
-                $userModel = new User();
+
+                $userModel = new \Model\User();
                 $user = $userModel->getUserById($userId);
 
                 if ($user['name'] !== $name) {
@@ -250,8 +250,8 @@ class UserController
                 $errors['email'] = "Некорректный формат email";
             } else {
 
-                require_once '../Model/User.php';
-                $userModel = new User();
+
+                $userModel = new \Model\User();
 
                 $user = $userModel->getByEmail($email);
 
@@ -285,7 +285,7 @@ class UserController
 
         session_start();
 
-        $__SESSION = [];
+        $_SESSION = [];
 
         session_destroy();
 

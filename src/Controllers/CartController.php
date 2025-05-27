@@ -1,5 +1,5 @@
 <?php
-
+namespace Controllers;
 
 class CartController
 {
@@ -20,8 +20,8 @@ class CartController
 
 
 
-        require_once '../Model/Cart.php';
-        $cartModel = new Cart();
+
+        $cartModel = new \Model\Cart();
 
 
          $cart = $cartModel->getUserCart($userId);
@@ -37,8 +37,8 @@ class CartController
             exit;
         }
 
-        require_once '../Model/Cart.php';
-        $cartModel = new Cart();
+
+        $cartModel = new \Model\Cart();
 
         $userId = $_SESSION['user_id'];
         $cartModel->deleteProduct($userId);

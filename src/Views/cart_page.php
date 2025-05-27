@@ -80,9 +80,18 @@
         </tbody>
     </table>
 
-    <form method="post" action="/clear-cart">
-        <button type="submit" class="clear-btn">Очистить корзину</button>
-    </form>
+    <div style="text-align: center;">
+        <form method="post" action="/clear-cart" style="margin-bottom: 20px;">
+            <button type="submit" class="clear-btn">Очистить корзину</button>
+        </form>
+
+        <a href="/order-checkout"
+           class="clear-btn"
+           style="background: #27ae60; text-align: center; display: inline-block; text-decoration: none;">
+            Оформить заказ
+        </a>
+    </div>
+
 <?php endif; ?>
 
 </body>

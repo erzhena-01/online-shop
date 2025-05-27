@@ -1,5 +1,5 @@
 <?php
-
+namespace Controllers;
 
 
 class ProductController
@@ -15,8 +15,8 @@ class ProductController
             exit;
         }
 
-        require_once '../Model/Product.php';
-        $productModel = new Product();
+
+        $productModel = new \Model\Product();
 
         $products = $productModel->getProductsList();
 
@@ -51,8 +51,8 @@ class ProductController
         $errors = $this->validate($_POST);
 
         if (empty($errors)) {
-            require_once '../Model/Product.php';
-            $productModel = new Product();
+
+            $productModel = new \Model\Product();
 
             $data = $productModel->getProductByIds($_POST['product_id'], $_SESSION['user_id']);
 
@@ -81,8 +81,8 @@ class ProductController
     {
         $errors = [];
 
-        require_once '../Model/Product.php';
-        $productModel = new Product();
+
+        $productModel = new \Model\Product();
 
         if (isset($data['product_id'])) {
             $productId = (int)$data['product_id'];
@@ -97,7 +97,7 @@ class ProductController
             $errors['product_id'] = 'Укажите ID продукта';
         }
 
-        if (isset ($data['amount'])) {
+        if (isset($data['amount'])) {
             $amount = (int)$data['amount'];
             if ($amount <= 0) {
                 $errors['amount'] = 'Количество должно быть положительным числом';
