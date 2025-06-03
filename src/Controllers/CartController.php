@@ -21,10 +21,10 @@ class CartController
 
 
 
-        $cartModel = new \Model\Cart();
+        $cartModel = new \Model\UserProduct();
 
 
-         $cart = $cartModel->getUserCart($userId);
+         $cart = $cartModel->getAllByUserId($userId);
         require_once '../Views/cart_page.php';
 
     }
@@ -37,15 +37,15 @@ class CartController
             exit;
         }
 
-
-        $cartModel = new \Model\Cart();
+        $cartModel = new \Model\UserProduct();
 
         $userId = $_SESSION['user_id'];
-        $cartModel->deleteProduct($userId);
+        $cartModel->deleteByUserId($userId); // Исправили имя метода
 
         header("Location: /cart");
         exit;
     }
+
 
 
 }

@@ -85,7 +85,7 @@
             <button type="submit" class="clear-btn">Очистить корзину</button>
         </form>
 
-        <a href="/order-checkout"
+        <a href="/create-order"
            class="clear-btn"
            style="background: #27ae60; text-align: center; display: inline-block; text-decoration: none;">
             Оформить заказ

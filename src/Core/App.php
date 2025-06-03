@@ -92,23 +92,24 @@ class App
             ],
         ],
 
-        '/order-checkout' => [
+        '/create-order' => [
             'GET' => [
                 'class' => OrderController::class,
                 'method' => 'getCheckoutForm',
             ],
             'POST' => [
                 'class' => OrderController::class,
-                'method' => 'submitOrder',
+                'method' => 'handleCheckout',
             ],
         ],
 
-        '/order-success' => [
+
+        '/my-orders' => [
             'GET' => [
                 'class' => OrderController::class,
-                'method' => 'getSuccessPage',
-            ],
-        ],
+                'method' => 'getMyOrders',
+            ]
+        ]
 
 
 

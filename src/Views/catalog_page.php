@@ -2,7 +2,10 @@
     <div class="nav-bar">
         <a href="/profile" class="nav-link">Мой профиль</a>
         <a href="/cart" class="nav-link cart-link">Корзина 🛒</a>
+        <a href="/my-orders" class="nav-link">Мои заказы</a>
         <a href="/logout" class="nav-link">Выйти</a>
+
+
     </div>
 
     <h3 class="page-title">Каталог товаров</h3>
