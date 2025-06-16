@@ -7,113 +7,7 @@ use Controllers\UserController;
 
 class App
 {
-    private array $routes = [
-
-        '/registration' => [
-            'GET' => [
-                'class' => UserController::class,
-                'method' => 'getRegistrate',
-            ],
-            'POST' => [
-                'class' => UserController::class,
-                'method' => 'registrate',
-            ],
-        ],
-
-        '/login' => [
-            'GET' => [
-                'class' => UserController::class,
-                'method' => 'getLogin',
-            ],
-            'POST' => [
-                'class' => UserController::class,
-                'method' => 'login',
-            ],
-        ],
-
-        '/logout' => [
-            'GET' => [
-                'class' => UserController::class,
-                'method' => 'getLogout',
-            ]
-        ],
-
-        '/profile' => [
-            'GET' => [
-                'class' => UserController::class,
-                'method' => 'getProfile',
-            ],
-        ],
-
-        '/edit-profile' => [
-            'GET' => [
-                'class' => UserController::class,
-                'method' => 'getProfileForm',
-            ],
-            'POST' => [
-                'class' => UserController::class,
-                'method' => 'editProfile',
-            ],
-        ],
-
-        '/catalog' => [
-            'GET' => [
-                'class' => ProductController::class,
-                'method' => 'getCatalog',
-            ],
-        ],
-
-        '/add-product' => [
-            'GET' => [
-                'class' => ProductController::class,
-                'method' => 'getProductsForm',
-            ],
-            'POST' => [
-                'class' => ProductController::class,
-                'method' => 'getProduct',
-            ],
-        ],
-
-        '/cart' => [
-            'GET' => [
-                'class' => CartController::class,
-                'method' => 'getCart',
-            ],
-        ],
-
-        '/clear-cart' => [
-            'GET' => [
-                'class' => CartController::class,
-                'method' => 'getCart',
-            ],
-            'POST' => [
-                'class' => CartController::class,
-                'method' => 'clearCart',
-            ],
-        ],
-
-        '/create-order' => [
-            'GET' => [
-                'class' => OrderController::class,
-                'method' => 'getCheckoutForm',
-            ],
-            'POST' => [
-                'class' => OrderController::class,
-                'method' => 'handleCheckout',
-            ],
-        ],
-
-
-        '/my-orders' => [
-            'GET' => [
-                'class' => OrderController::class,
-                'method' => 'getMyOrders',
-            ]
-        ]
-
-
-
-    ];
+    private array $routes = [];
 
 
     public function run()
@@ -131,7 +25,6 @@ class App
 
                 $class = $handler['class'];
                 $method = $handler['method'];
-
 
 
                 $controllerClass = $class;
@@ -152,5 +45,29 @@ class App
             require_once "../Views/404.php";
         }
     }
-}
 
+
+    public function addRoute(string $route, string $routeMethod, string $className, string $method)
+    {
+        $this->routes[$route][$routeMethod] = [
+            'class' => $className,
+            'method' => $method
+        ];
+    }
+
+    public function get(string $route, string $className, string $method)
+    {
+        $this->routes[$route]['GET'] = [
+            'class' => $className,
+            'method' => $method
+        ];
+    }
+
+    public function post(string $route, string $className, string $method)
+    {
+        $this->routes[$route]['POST'] = [
+            'class' => $className,
+            'method' => $method
+        ];
+    }
+}

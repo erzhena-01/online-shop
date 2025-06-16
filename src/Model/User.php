@@ -6,6 +6,11 @@ require_once 'Model.php';
 class User extends Model
 {
 
+    private int $id;
+    private string $name;
+    private string $email;
+    private string $password;
+
 public function getByEmail(string $email): array|false
   {
 
@@ -13,9 +18,19 @@ public function getByEmail(string $email): array|false
     $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email;");
     $stmt->execute([':email' => $email]);
 
-    $result = $stmt->fetch();
-    return $result;
+    $user = $stmt->fetch();
 
+      if ($user === false) {
+          return null;
+      }
+
+      $obj = new self();
+      $obj->id = $user['id'];
+      $obj->name = $user['name'];
+      $obj->email = $user['email'];
+      $obj->password = $user['password'];
+
+      return $obj;
   }
 
 
@@ -41,7 +56,17 @@ public function getByEmail(string $email): array|false
       $stmt = $this->pdo->query('SELECT * FROM users WHERE id =' . $userId);
       $user = $stmt->fetch();
 
-      return $user;
+      if($user === false){
+          return null;
+      }
+
+      $obj = new self();
+      $obj->id = $user['id'];
+      $obj->name = $user['name'];
+      $obj->email = $user['email'];
+      $obj->password = $user['password'];
+
+      return $obj;
 
   }
 
@@ -52,13 +77,13 @@ public function getByEmail(string $email): array|false
     }
 
 
-    public function getUserByName(string $name)
+    public function getUserByName(string $name) : ?self
   {
       $stmt = $this->pdo->prepare('SELECT * FROM users WHERE name = :name');
       $stmt->execute(['name' => $name]);
 
       $user = $stmt->fetch();
-      return $user;
+
   }
 
   public function addUser(string $name, string $email, string $passwordHash)
@@ -69,4 +94,26 @@ public function getByEmail(string $email): array|false
       $stmt->execute([':name' => $name, ':email' => $email, ':psw' => $passwordHash]);
 
   }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+
 }

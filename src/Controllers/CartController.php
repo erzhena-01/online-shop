@@ -1,28 +1,21 @@
 <?php
 namespace Controllers;
 
-class CartController
+use Model\UserProduct;
+
+class CartController extends BaseController
 {
     public function getCart()
     {
 
-        if(session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-
-        if(!isset($_SESSION['user_id'])) {
-            header('location: /login');
+        if(!$this->check()) {
+            header('Location: /login');
             exit;
         }
 
-        $userId = $_SESSION['user_id'];
-
-
-
+        $userId = $this->getCurrentUserId();
 
         $cartModel = new \Model\UserProduct();
-
 
          $cart = $cartModel->getAllByUserId($userId);
         require_once '../Views/cart_page.php';
@@ -30,17 +23,75 @@ class CartController
     }
     public function clearCart()
     {
-        session_start();
 
-        if (!isset($_SESSION['user_id'])) {
+
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
 
         $cartModel = new \Model\UserProduct();
 
-        $userId = $_SESSION['user_id'];
-        $cartModel->deleteByUserId($userId); // Исправили имя метода
+        $userId = $this->getCurrentUserId();
+        $cartModel->deleteByUserId($userId);
+
+        header("Location: /cart");
+        exit;
+    }
+
+
+    public function decreaseProduct()
+    {
+
+        if(!$this->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId = $this->getCurrentUserId();
+        $productId = $_POST['productId'];
+
+        $cartModel = new \Model\UserProduct();
+
+        $productInCart = $cartModel->getByUserIdAndProductId($userId, $productId);
+
+        if ($productInCart) {
+            if ($productInCart->getAmount() > 1) {
+                $cartModel->decreaseAmount($userId, $productId);
+            } else {
+                $cartModel->deleteByUserIdAndProductId($userId, $productId);
+            }
+        } else {
+            echo "Ошибка: такой товар не найден в корзине";
+            exit;
+        }
+
+        header("Location: /cart");
+        exit;
+
+    }
+
+    public function increaseProduct()
+    {
+
+        if(!$this->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId = $this->getCurrentUserId();
+        $productId = $_POST['productId'];
+
+        $cartModel = new \Model\UserProduct();
+        $productInCart = $cartModel->getByUserIdAndProductId($userId, $productId);
+
+        if ($productInCart) {
+            // если товар уже есть — увеличиваем количество
+            $cartModel->increaseAmount($userId, $productId);
+        } else {
+            // если товара ещё нет — добавляем в корзину с количеством 1
+            $cartModel->addToCart($userId, $productId, 1);
+        }
 
         header("Location: /cart");
         exit;

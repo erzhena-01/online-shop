@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -66,9 +65,9 @@
 <body>
 <div class="container">
     <h1>Личный кабинет</h1>
-    <div class="profile-item"><strong>Имя</strong> <span class="profile-value"><?= ($user['name']) ?></span></div>
-    <div class="profile-item"><strong>Email</strong> <span class="profile-value"><?= ($user['email']) ?></span></div>
-    <div class="profile-item"><strong>ID пользователя</strong> <span class="profile-value"><?= (int)$user['id'] ?></span></div>
+    <div class="profile-item"><strong>Имя</strong> <span class="profile-value"><?= htmlspecialchars($user->getName()) ?></span></div>
+    <div class="profile-item"><strong>Email</strong> <span class="profile-value"><?= htmlspecialchars($user->getEmail()) ?></span></div>
+    <div class="profile-item"><strong>ID пользователя</strong> <span class="profile-value"><?= (int)$user->getId() ?></span></div>
 
     <div class="edit-btn">
         <a href="/edit-profile">Редактировать профиль</a>

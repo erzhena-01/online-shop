@@ -1,64 +1,81 @@
-<!DOCTYPE html>
-<html lang="ru">
+
+
 <head>
     <meta charset="UTF-8">
     <title>Корзина</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f8f8f8;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
 
         table {
-            width: 60%;
+            width: 100%;
             border-collapse: collapse;
-            margin: auto;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
         }
 
         th, td {
-            border: 1px solid #eee;
-            padding: 15px;
-            text-align: center;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
         }
 
         th {
-            background-color: #f0f0f0;
+            background-color: #f8f8f8;
+            color: #333;
         }
 
-        .empty {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 20px;
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:hover {
+            background-color: #f1f7ff;
         }
 
         .clear-btn {
-            display: block;
-            margin: 30px auto;
-            background: #e74c3c;
+            background-color: #e74c3c;
             color: white;
-            padding: 12px 24px;
+            padding: 12px 25px;
             border: none;
-            font-size: 16px;
-            cursor: pointer;
             border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            font-family: Arial, sans-serif;
         }
 
         .clear-btn:hover {
-            background: #c0392b;
+            background-color: #c0392b;
+        }
+
+        a.clear-btn {
+            background-color: #27ae60;
+        }
+
+        a.clear-btn:hover {
+            background-color: #219150;
+        }
+
+        .empty {
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+            padding: 40px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        div[style*="text-align: center;"] {
+            margin-top: 20px;
         }
     </style>
 </head>
-<body>
 
-<h1>🛒 Ваша корзина</h1>
+
 
 <?php if (empty($cart)): ?>
     <div class="empty">Корзина пуста.</div>
@@ -67,32 +84,47 @@
         <thead>
         <tr>
             <th>ID товара</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена</th>
             <th>Количество</th>
+            <th>Сумма</th>
         </tr>
         </thead>
         <tbody>
         <?php foreach ($cart as $item): ?>
             <tr>
-                <td><?= ($item['id']) ?></td>
-                <td><?= (int)$item['amount'] ?></td>
+                <td><?= htmlspecialchars($item->getProductId()) ?></td>
+                <td><?= htmlspecialchars($item->getName()) ?></td>
+                <td><?= htmlspecialchars($item->getDescription()) ?></td>
+                <td><?= $item->getPrice() ?> ₽</td>
+                <td>
+                    <form method="post" action="/cart/decrease" style="display: inline;">
+                        <input type="hidden" name="productId" value="<?= $item->getProductId() ?>">
+                        <button type="submit" style="padding: 5px 10px;">−</button>
+                    </form>
+
+                    <?= $item->getAmount() ?>
+
+                    <form method="post" action="/cart/increase" style="display: inline;">
+                        <input type="hidden" name="productId" value="<?= $item->getProductId() ?>">
+                        <button type="submit" style="padding: 5px 10px;">+</button>
+                    </form>
+
+                </td>
+                <td><?= $item->getAmount() * $item->getPrice() ?> ₽</td>
             </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
 
     <div style="text-align: center;">
-        <form method="post" action="/clear-cart" style="margin-bottom: 20px;">
+        <form method="post" action="/clear-cart" style="margin-bottom: 20px; display: inline-block;">
             <button type="submit" class="clear-btn">Очистить корзину</button>
         </form>
 
-        <a href="/create-order"
-           class="clear-btn"
-           style="background: #27ae60; text-align: center; display: inline-block; text-decoration: none;">
+        <a href="/create-order" class="clear-btn">
             Оформить заказ
         </a>
     </div>
-
 <?php endif; ?>
-
-</body>
-</html>

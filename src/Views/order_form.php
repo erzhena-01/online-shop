@@ -81,14 +81,15 @@ $total = 0;
     </thead>
     <tbody>
     <?php foreach ($items as $item): ?>
-        <?php $sum = $item['price'] * $item['amount']; $total += $sum; ?>
+        <?php $sum = $item->getPrice() * $item->getAmount(); $total += $sum; ?>
         <tr>
-            <td><?= ($item['name']) ?></td>
-            <td style="text-align: right;"><?= $item['amount'] ?></td>
-            <td style="text-align: right;"><?= number_format($item['price'], 2) ?> ₽</td>
+            <td><?= htmlspecialchars($item->getName()) ?></td>
+            <td style="text-align: right;"><?= $item->getAmount() ?></td>
+            <td style="text-align: right;"><?= number_format($item->getPrice(), 2) ?> ₽</td>
             <td style="text-align: right;"><?= number_format($sum, 2) ?> ₽</td>
         </tr>
     <?php endforeach; ?>
+
     </tbody>
 </table>
 

@@ -1,11 +1,162 @@
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    .nav-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        background-color: #fff;
+        padding: 15px 30px;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: #007bff;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin: 30px 0;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 30px;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background-color: #ff4757;
+        color: #fff;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .product-brand {
+        color: #555;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .product-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #27ae60;
+        margin-bottom: 15px;
+    }
+
+    .add-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .amount-input {
+        width: 60px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    .add-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-button:hover {
+        background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+        .nav-bar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .product-title {
+            font-size: 16px;
+        }
+
+        .product-price {
+            font-size: 18px;
+        }
+    }
+</style>
+
+
+
 <div class="container">
     <div class="nav-bar">
         <a href="/profile" class="nav-link">Мой профиль</a>
         <a href="/cart" class="nav-link cart-link">Корзина 🛒</a>
         <a href="/my-orders" class="nav-link">Мои заказы</a>
         <a href="/logout" class="nav-link">Выйти</a>
-
-
     </div>
 
     <h3 class="page-title">Каталог товаров</h3>
@@ -14,129 +165,27 @@
         <?php foreach ($products as $product): ?>
             <div class="product-card">
                 <div class="card-header">Хит продаж</div>
-                <img src="<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>" class="product-image">
+                <img src="<?php echo $product->getImageUrl(); ?>" alt="<?php echo $product->getName(); ?>" class="product-image">
                 <div class="card-body">
-                    <p class="product-brand"><?php echo $product['name']; ?></p>
-                    <h5 class="product-title"><?php echo $product['description']; ?></h5>
-                    <div class="product-price"><?php echo $product['price']; ?> ₽</div>
+                    <p class="product-brand"><?php echo $product->getName(); ?></p>
+                    <h5 class="product-title"><?php echo $product->getDescription(); ?></h5>
+                    <div class="product-price"><?php echo $product->getPrice(); ?> ₽</div>
 
-                    <form method="post" action="/add-product" class="add-form">
-                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                        <input type="number" name="amount" value="1" min="1" class="amount-input">
-                        <button type="submit" class="add-button">Добавить в корзину</button>
-                    </form>
+                    <div class="quantity-controls">
+                        <form method="post" action="/cart/decrease" class="add-form">
+                            <input type="hidden" name="productId" value="<?php echo $product->getId(); ?>">
+                            <button type="submit" class="quantity-button">-</button>
+                        </form>
+
+                        <input type="number" name="amount" value="<?php echo $product->getAmount(); ?>" min="1" class="amount-input" readonly>
+
+                        <form method="post" action="/cart/increase" class="add-form">
+                            <input type="hidden" name="productId" value="<?php echo $product->getId(); ?>">
+                            <button type="submit" class="quantity-button">+</button>
+                        </form>
+                    </div>
+
                 </div>
-            </div>
         <?php endforeach; ?>
     </div>
 </div>
-
-<style>
-    body {
-        font-family: sans-serif;
-        background-color: #f7f7f7;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .nav-bar {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-    }
-
-    .nav-link {
-        font-weight: bold;
-        text-decoration: none;
-        color: #333;
-    }
-
-    .cart-link {
-        color: #007bff;
-    }
-
-    .page-title {
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 25px;
-    }
-
-    .product-card {
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        transition: box-shadow 0.2s ease;
-    }
-
-    .product-card:hover {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-
-    .card-header {
-        font-size: 12px;
-        color: gray;
-        margin-bottom: 10px;
-    }
-
-    .product-image {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
-    .product-brand {
-        font-size: 13px;
-        color: #888;
-        margin: 5px 0;
-    }
-
-    .product-title {
-        font-size: 16px;
-        margin: 5px 0;
-        color: #333;
-    }
-
-    .product-price {
-        font-size: 18px;
-        font-weight: bold;
-        margin: 10px 0;
-    }
-
-    .add-form {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .amount-input {
-        width: 60px;
-        padding: 4px;
-    }
-
-    .add-button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .add-button:hover {
-        background-color: #0056b3;
-    }
-</style>

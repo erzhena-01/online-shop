@@ -1,78 +1,51 @@
 <?php
 namespace Controllers;
 
+use Model\Product;
 
-class ProductController
+class ProductController extends BaseController
 {
-
     public function getCatalog()
     {
-
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->check()) {
             header("Location: /login_form.php");
             exit;
         }
 
-
-        $productModel = new \Model\Product();
-
+        $productModel = new Product();
         $products = $productModel->getProductsList();
 
         require_once '../Views/catalog_page.php';
-
     }
-
-
-
-
 
     public function getProductsForm()
     {
         require_once '../Views/add_product_form.php';
     }
 
-
     public function getProduct()
     {
-
-
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
 
-
         $errors = $this->validate($_POST);
 
         if (empty($errors)) {
+            $productModel = new Product();
 
-            $productModel = new \Model\Product();
+            $product = $productModel->getProductByIds((int)$_POST['product_id'], $_SESSION['user_id']);
 
-            $data = $productModel->getProductByIds($_POST['product_id'], $_SESSION['user_id']);
-
-
-            if ($data === false) {
-
+            if ($product === null) {
                 $productModel->addUserProduct((int)$_POST['product_id'], (int)$_POST['amount']);
-
-
             } else {
-                $amount = $data['amount'] + (int)$_POST['amount'];
-
-
-                $productModel->updateUserProductAmount($_SESSION['user_id'], (int)$_POST['product_id'], $amount);
-
+                $newAmount = $product->getAmount() + (int)$_POST['amount'];
+                $productModel->updateUserProductAmount($_SESSION['user_id'], (int)$_POST['product_id'], $newAmount);
             }
 
             header('Location: /cart');
             exit;
-
         }
 
     }
@@ -81,18 +54,15 @@ class ProductController
     {
         $errors = [];
 
-
-        $productModel = new \Model\Product();
+        $productModel = new Product();
 
         if (isset($data['product_id'])) {
             $productId = (int)$data['product_id'];
 
-            $data = $productModel->getProductById($productId);
-
-            if ($data === false) {
+            $product = $productModel->getProductById($productId);
+            if ($product === null) {
                 $errors['product_id'] = 'Продукт не найден';
             }
-
         } else {
             $errors['product_id'] = 'Укажите ID продукта';
         }
@@ -101,13 +71,11 @@ class ProductController
             $amount = (int)$data['amount'];
             if ($amount <= 0) {
                 $errors['amount'] = 'Количество должно быть положительным числом';
-            } else {
-                $errors['amount'] = 'Укажите количество';
             }
+        } else {
+            $errors['amount'] = 'Укажите количество';
         }
-
 
         return $errors;
     }
 }
-
