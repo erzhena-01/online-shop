@@ -12,6 +12,12 @@ class Order extends Model
     private int $userId;
     private string $createdAt;
 
+    protected function getTableName(): string
+    {
+        return 'orders';
+    }
+
+
     public function create(
         string $customerName,
         string $contactPhone,
@@ -19,7 +25,7 @@ class Order extends Model
         int $userId
     ): int {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO orders (customer_name, contact_phone, address, user_id)
+            "INSERT INTO {$this->getTableName()} (customer_name, contact_phone, address, user_id)
             VALUES (:name, :contact_phone, :address, :user_id) RETURNING id"
         );
 
@@ -37,7 +43,7 @@ class Order extends Model
 
     public function getByUserId(int $userId): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id ORDER BY created_at DESC");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE user_id = :user_id ORDER BY created_at DESC");
         $stmt->execute([':user_id' => $userId]);
         $ordersData = $stmt->fetchAll();
 
@@ -55,6 +61,7 @@ class Order extends Model
 
         return $orders;
     }
+
 
 
     public function getId(): int

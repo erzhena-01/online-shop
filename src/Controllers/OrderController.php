@@ -5,6 +5,8 @@ use Model\OrderProduct;
 use Model\Product;
 use Model\UserProduct;
 use Model\Order;
+use Service\AuthService;
+use Service\OrderService;
 
 class OrderController extends BaseController
 {
@@ -12,53 +14,50 @@ class OrderController extends BaseController
     private Product $productModel;
     private OrderProduct $orderProductModel;
     private Order $orderModel;
-
+    private OrderService $orderService;
 
     public function __construct()
     {
+        parent::__construct();
         $this->userProductModel = new UserProduct();
         $this->productModel = new Product();
         $this->orderProductModel = new OrderProduct();
         $this->orderModel = new Order();
+        $this->authService = new AuthService();
+        $this->orderService = new OrderService();
+
     }
+
 
 
     public function createOrder()
     {
-
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
-        $name = $_POST['name'] ;
+        $userId = $this->authService->getCurrentUserId();
+        $name = $_POST['name'];
         $phone = $_POST['contact_phone'];
         $address = $_POST['address'];
 
-        $cartModel = new UserProduct();
-        $items = $cartModel->getAllByUserId($userId);
+        $orderId = $this->orderService->createOrder($userId, $name, $phone, $address);
 
-        if (empty($items)) {
+        if ($orderId === null) {
             echo "Корзина пуста";
             exit;
         }
 
-        $orderModel = new Order();
-        $orderModel->create($userId, $name, $phone, $address, $items);
-
-        // очищаем корзину
-        $cartModel->deleteByUserId($userId);
-
-        // перенаправляем на страницу заказов
         header('Location: /my_orders');
         exit;
     }
 
+
     public function myOrders()
     {
 
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
@@ -73,12 +72,12 @@ class OrderController extends BaseController
 public function getCheckoutForm()
     {
 
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
 
         $cart = new UserProduct();
         $items = $cart->getItems($userId);
@@ -108,55 +107,44 @@ public function getCheckoutForm()
 
     public function handleCheckout()
     {
-
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
         $errors = $this->validateOrder($_POST);
+        $userId = $this->authService->getCurrentUserId();
 
-        $userId = $this->getCurrentUserId();
+        if (!empty($errors)) {
 
-        $cart = new UserProduct();
-        $items = $cart->getItems($userId);
-
-        if (empty($errors)) {
-            $customerName = $_POST['name'];
-            $contactPhone = $_POST['contact_phone'];
-            $address = $_POST['address'];
-
-            $orderModel = new Order();
-            $orderId = $orderModel->create($customerName, $contactPhone, $address, $userId);
-
-            $userProductModel = new UserProduct();
-            $userProducts = $userProductModel->getAllByUserId($userId);
-
-            $orderProduct = new OrderProduct();
-            foreach ($userProducts as $userProduct) {
-
-                $productId = $userProduct->getProductId();
-                $amount = $userProduct->getAmount();
-
-                $orderProduct->create($orderId, $productId, $amount);
-            }
-
-            $userProductModel->deleteByUserId($userId);
-
-            header("Location: /catalog");
-            exit;
+            return;
         }
+
+        $name = $_POST['name'];
+        $phone = $_POST['contact_phone'];
+        $address = $_POST['address'];
+
+        $orderId = $this->orderService->createOrder($userId, $name, $phone, $address);
+
+        if ($orderId === null) {
+            echo "Корзина пуста";
+            return;
+        }
+
+        header("Location: /catalog");
+        exit;
     }
+
 
     public function getMyOrders()
     {
 
-       if(!$this->check()) {
+       if(!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
         $orders = $this->orderModel->getByUserId($userId);
         $userOrders = [];
 

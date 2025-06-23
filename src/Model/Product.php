@@ -15,6 +15,12 @@ class Product extends Model
     private int $user_id = 0;
     private int $amount = 0;
 
+    protected function getTableName(): string
+    {
+        return 'products';
+    }
+
+
     public function __construct(array $data = [])
     {
         parent::__construct();
@@ -100,7 +106,7 @@ class Product extends Model
     // Остальные методы остаются без изменений
     public function getProductsList(): array
     {
-        $stmt = $this->pdo->query('SELECT * FROM products');
+        $stmt = $this->pdo->query("SELECT * FROM {$this->getTableName()}");
         $items = $stmt->fetchAll();
 
         $products = [];
@@ -114,7 +120,7 @@ class Product extends Model
 
     public function getProductById(int $productId): ?self
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :productId");
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->getTableName()} WHERE id = :productId");
         $stmt->execute([':productId' => $productId]);
 
         $data = $stmt->fetch();

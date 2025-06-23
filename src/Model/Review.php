@@ -12,11 +12,16 @@ class Review extends Model
     public string $comment;
     public string $createdAt;
     public string $author;
+
+    protected function getTableName(): string
+    {
+        return 'reviews';
+    }
     public function addReview(int $productId, int $userId, int $rating, string $comment): self
     {
-        $stmt = $this->pdo->prepare('
-        INSERT INTO reviews (product_id, user_id, rating, comment) 
-        VALUES (:productId, :userId, :rating, :comment)'
+        $stmt = $this->pdo->prepare("
+        INSERT INTO {$this->getTableName()} (product_id, user_id, rating, comment) 
+        VALUES (:productId, :userId, :rating, :comment)"
         );
         $stmt->execute([
             ':productId' => $productId,
@@ -27,7 +32,7 @@ class Review extends Model
 
         $reviewId = $this->pdo->lastInsertId();
 
-        $stmt = $this->pdo->prepare('SELECT created_at, user_id FROM reviews WHERE id = :id');
+        $stmt = $this->pdo->prepare("SELECT created_at, user_id FROM {$this->getTableName()} WHERE id = :id");
         $stmt->execute([':id' => $reviewId]);
         $reviewRow = $stmt->fetch();
 
@@ -51,7 +56,7 @@ class Review extends Model
     public function getByProductId(int $productId): array
     {
         $stmt = $this->pdo->prepare("
-        SELECT * FROM reviews 
+        SELECT * FROM {$this->getTableName()} 
         WHERE product_id = :productId
         ORDER BY created_at DESC
     ");

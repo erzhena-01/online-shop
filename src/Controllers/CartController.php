@@ -2,18 +2,30 @@
 namespace Controllers;
 
 use Model\UserProduct;
+use Service\AuthService;
+use Service\CartService;
 
 class CartController extends BaseController
 {
+    private UserProduct $cartModel;
+    private CartService $cartService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->cartModel = new UserProduct();
+        $this->authService = new AuthService();
+        $this->cartService = new CartService();
+    }
     public function getCart()
     {
 
-        if(!$this->check()) {
+        if(!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
 
         $cartModel = new \Model\UserProduct();
 
@@ -25,14 +37,14 @@ class CartController extends BaseController
     {
 
 
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
         $cartModel = new \Model\UserProduct();
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
         $cartModel->deleteByUserId($userId);
 
         header("Location: /cart");
@@ -43,28 +55,15 @@ class CartController extends BaseController
     public function decreaseProduct()
     {
 
-        if(!$this->check()) {
+        if(!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
         $productId = $_POST['productId'];
 
-        $cartModel = new \Model\UserProduct();
-
-        $productInCart = $cartModel->getByUserIdAndProductId($userId, $productId);
-
-        if ($productInCart) {
-            if ($productInCart->getAmount() > 1) {
-                $cartModel->decreaseAmount($userId, $productId);
-            } else {
-                $cartModel->deleteByUserIdAndProductId($userId, $productId);
-            }
-        } else {
-            echo "Ошибка: такой товар не найден в корзине";
-            exit;
-        }
+        $this->cartService->decreaseProduct($userId, $productId);
 
         header("Location: /cart");
         exit;
@@ -74,24 +73,15 @@ class CartController extends BaseController
     public function increaseProduct()
     {
 
-        if(!$this->check()) {
+        if(!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
 
-        $userId = $this->getCurrentUserId();
+        $userId = $this->authService->getCurrentUserId();
         $productId = $_POST['productId'];
 
-        $cartModel = new \Model\UserProduct();
-        $productInCart = $cartModel->getByUserIdAndProductId($userId, $productId);
-
-        if ($productInCart) {
-            // если товар уже есть — увеличиваем количество
-            $cartModel->increaseAmount($userId, $productId);
-        } else {
-            // если товара ещё нет — добавляем в корзину с количеством 1
-            $cartModel->addToCart($userId, $productId, 1);
-        }
+        $this->cartService->addProductToCart($userId, $productId);
 
         header("Location: /cart");
         exit;

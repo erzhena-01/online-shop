@@ -1,17 +1,18 @@
 <?php
 namespace Controllers;
 
+use Service\AuthService;
 use Model\User;
 
 class UserController extends BaseController
 {
     private User $userModel;
-
     public function __construct()
     {
         parent::__construct();
-        $this->userModel = new User();
+        $this->userModel = new \Model\User();
     }
+
 
     public function getRegistrate()
     {
@@ -95,7 +96,7 @@ class UserController extends BaseController
         $errors = $this->validateLoginForm($_POST);
 
         if (empty($errors)) {
-            $result = $this->auth($_POST['email'], $_POST['password']);
+            $result = $this->authService->auth($_POST['email'], $_POST['password']);
 
             if ($result === true) {
                 header("Location: /catalog");
@@ -125,8 +126,8 @@ class UserController extends BaseController
 
     public function getProfile()
     {
-        if ($this->check()) {
-            $userId = $this->getCurrentUserId();
+        if ($this->authService->check()) {
+            $userId = $this->authService->getCurrentUserId();
             $user = $this->userModel->getUserById($userId);
 
             require_once '../Views/profile_page.php';
@@ -143,34 +144,29 @@ class UserController extends BaseController
 
     public function editProfile()
     {
-        session_start();
+        $userId = $this->authService->getCurrentUserId();
+        $errors = $this->validateProfileUpdate($_POST);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $errors = $this->validateProfileUpdate($_POST);
+        if (empty($errors)) {
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $user = $this->userModel->getUserById($userId);
 
-            if (empty($errors)) {
-                $name = $_POST['name'];
-                $email = $_POST['email'];
-                $userId = $_SESSION['user_id'];
-
-                $user = $this->userModel->getUserById($userId);
-
-                if ($user->getName() !== $name) {
-                    $this->userModel->updateNameById($name, $userId);
-                }
-
-                if ($user->getEmail() !== $email) {
-                    $this->userModel->updateEmailById($email, $userId);
-                }
-
-                if (!empty($_POST['psw'])) {
-                    $passwordHash = password_hash($_POST['psw'], PASSWORD_DEFAULT);
-                    $this->userModel->updatePasswordById($passwordHash, $userId);
-                }
-
-                header("Location: /profile");
-                exit;
+            if ($user->getName() !== $name) {
+                $this->userModel->updateNameById($name, $userId);
             }
+
+            if ($user->getEmail() !== $email) {
+                $this->userModel->updateEmailById($email, $userId);
+            }
+
+            if (!empty($_POST['psw'])) {
+                $passwordHash = password_hash($_POST['psw'], PASSWORD_DEFAULT);
+                $this->userModel->updatePasswordById($passwordHash, $userId);
+            }
+
+            header("Location: /profile");
+            exit;
         }
 
         require_once '../Views/edit_profile_form.php';
@@ -196,9 +192,8 @@ class UserController extends BaseController
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors['email'] = "Некорректный формат email";
             } else {
-                session_start();
                 $existingUser = $this->userModel->getByEmail($email);
-                $userId = $_SESSION['user_id'];
+                $userId = $this->authService->getCurrentUserId();
 
                 if ($existingUser && $existingUser->getId() !== $userId) {
                     $errors['email'] = "Пользователь с таким email уже существует";
@@ -224,9 +219,7 @@ class UserController extends BaseController
 
     public function getLogout()
     {
-        session_start();
-        $_SESSION = [];
-        session_destroy();
+        $this->authService->logout();
         header("Location: /login");
         exit;
     }

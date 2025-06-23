@@ -18,7 +18,7 @@ class ProductController extends BaseController
     }
     public function getCatalog()
     {
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header("Location: /login_form.php");
             exit;
         }
@@ -36,7 +36,7 @@ class ProductController extends BaseController
 
     public function getProduct()
     {
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
@@ -68,7 +68,7 @@ class ProductController extends BaseController
         $productModel = new Product();
 
         if (isset($data['product_id'])) {
-            $productId = (int)$data['product_id'];
+            $productId = $data['product_id'];
 
             $product = $productModel->getProductById($productId);
             if ($product === null) {
@@ -79,7 +79,7 @@ class ProductController extends BaseController
         }
 
         if (isset($data['amount'])) {
-            $amount = (int)$data['amount'];
+            $amount = $data['amount'];
             if ($amount <= 0) {
                 $errors['amount'] = 'Количество должно быть положительным числом';
             }
@@ -92,7 +92,7 @@ class ProductController extends BaseController
 
     public function getProductPage()
     {
-        if(!$this->check()) {
+        if(!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
@@ -134,7 +134,7 @@ class ProductController extends BaseController
     }
     public function addReview()
     {
-        if (!$this->check()) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         }
@@ -145,13 +145,13 @@ class ProductController extends BaseController
         if (empty($errors)) {
             $reviewModel = new \Model\Review();
             $reviewModel->addReview(
-                (int)$data['product_id'],
-                $this->getCurrentUserId(),
-                (int)$data['rating'],
-                trim($data['comment'])
+                $data['product_id'],
+                $this->authService->getCurrentUserId(),
+                $data['rating'],
+                $data['comment']
             );
 
-            $productId = (int)$data['product_id'];
+            $productId = $data['product_id'];
 
             $this->productModel = new \Model\Product();
             $product = $this->productModel->getProductById($productId);
