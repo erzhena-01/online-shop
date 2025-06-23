@@ -9,6 +9,7 @@ class UserController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->userModel = new User();
     }
 
@@ -59,7 +60,7 @@ class UserController extends BaseController
                 $errors['email'] = "Email некорректный";
             } else {
                 $user = $this->userModel->getByEmail($email);
-                if ($user !== false) {
+                if ($user !== null) {
                     $errors['email'] = "Пользователь с таким email уже существует";
                 }
             }
@@ -111,8 +112,8 @@ class UserController extends BaseController
     {
         $errors = [];
 
-        if (empty($data['name'])) {
-            $errors['name'] = "Имя должно быть заполнено";
+        if (empty($data['email'])) {
+            $errors['email'] = "Email должен быть заполнен";
         }
 
         if (empty($data['password'])) {

@@ -30,10 +30,10 @@ class BaseController
 
    }
 
-   public function auth( string $name, string $password): bool
+   public function auth( string $email, string $password): bool
    {
 
-           $user = $this->userModel->getUserByName($name);
+           $user = $this->userModel->getByEmail($email);
 
            if (!$user) {
               return false;

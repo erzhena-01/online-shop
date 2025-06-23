@@ -38,5 +38,8 @@ $app->get('/create-order',  OrderController::class, 'getCheckoutForm');
 $app->post('/create-order', OrderController::class, 'handleCheckout');
 $app->get('/my-orders',  OrderController::class, 'getMyOrders');
 
+$app->post('/add-review', ProductController::class, 'addReview');
+$app->post('/product', ProductController::class, 'getProductPage');
+
 
 $app->run();

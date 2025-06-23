@@ -65,8 +65,8 @@
 <body>
 <div class="container">
     <h1>Личный кабинет</h1>
-    <div class="profile-item"><strong>Имя</strong> <span class="profile-value"><?= htmlspecialchars($user->getName()) ?></span></div>
-    <div class="profile-item"><strong>Email</strong> <span class="profile-value"><?= htmlspecialchars($user->getEmail()) ?></span></div>
+    <div class="profile-item"><strong>Имя</strong> <span class="profile-value"><?= ($user->getName()) ?></span></div>
+    <div class="profile-item"><strong>Email</strong> <span class="profile-value"><?= ($user->getEmail()) ?></span></div>
     <div class="profile-item"><strong>ID пользователя</strong> <span class="profile-value"><?= (int)$user->getId() ?></span></div>
 
     <div class="edit-btn">

@@ -20,7 +20,7 @@
         </form>
 
         <form class="login-form" action="/login" method="POST">
-            <input type="text" name="name" placeholder="username"/>
+            <input type="email" name="email" placeholder="email"/>
             <input type="password" name="password" placeholder="password"/>
             <button>login</button>
             <p class="message">Not registered? <a href="#">Create an account</a></p>

@@ -11,7 +11,7 @@ class User extends Model
     private string $email;
     private string $password;
 
-public function getByEmail(string $email): array|false
+public function getByEmail(string $email): ?self
   {
 
 
@@ -77,16 +77,28 @@ public function getByEmail(string $email): array|false
     }
 
 
-    public function getUserByName(string $name) : ?self
-  {
-      $stmt = $this->pdo->prepare('SELECT * FROM users WHERE name = :name');
-      $stmt->execute(['name' => $name]);
+    public function getUserByName(string $name): ?self
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE name = :name');
+        $stmt->execute([':name' => $name]);
 
-      $user = $stmt->fetch();
+        $user = $stmt->fetch();
 
-  }
+        if ($user === false) {
+            return null;
+        }
 
-  public function addUser(string $name, string $email, string $passwordHash)
+        $obj = new self();
+        $obj->id = $user['id'];
+        $obj->name = $user['name'];
+        $obj->email = $user['email'];
+        $obj->password = $user['password'];
+
+        return $obj;
+    }
+
+
+    public function addUser(string $name, string $email, string $passwordHash)
   {
 
 

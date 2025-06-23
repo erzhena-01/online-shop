@@ -2,9 +2,20 @@
 namespace Controllers;
 
 use Model\Product;
+use Model\Review;
 
 class ProductController extends BaseController
 {
+
+    private Product $productModel;
+    private Review $reviewModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->productModel = new Product();
+        $this->reviewModel = new Review();
+    }
     public function getCatalog()
     {
         if (!$this->check()) {
@@ -78,4 +89,88 @@ class ProductController extends BaseController
 
         return $errors;
     }
+
+    public function getProductPage()
+    {
+        if(!$this->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $productId = $_POST['productId'];
+
+        if (!$productId) {
+            die('ID продукта не передан.');
+        }
+
+
+        $product = $this->productModel->getProductById((int)$productId);
+
+        if (!$product) {
+            die('Товар не найден.');
+        }
+
+
+        $reviews = $this->reviewModel->getByProductId((int)$productId);
+
+        require_once '../Views/product_page.php';
+    }
+
+    private function validateReview(array $data): array
+    {
+        $errors = [];
+
+        if (empty($data['product_id'])) {
+            $errors[] = 'Некорректный ID продукта';
+        }
+        if (empty($data['rating'])) {
+            $errors[] = 'Оценка должна быть от 1 до 5';
+        }
+        if (empty($data['comment'])) {
+            $errors[] = 'Комментарий не может быть пустым';
+        }
+        return $errors;
+
+    }
+    public function addReview()
+    {
+        if (!$this->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $data = $_POST;
+        $errors = $this->validateReview($data);
+
+        if (empty($errors)) {
+            $reviewModel = new \Model\Review();
+            $reviewModel->addReview(
+                (int)$data['product_id'],
+                $this->getCurrentUserId(),
+                (int)$data['rating'],
+                trim($data['comment'])
+            );
+
+            $productId = (int)$data['product_id'];
+
+            $this->productModel = new \Model\Product();
+            $product = $this->productModel->getProductById($productId);
+
+            if (!$product) {
+                die('Товар не найден.');
+            }
+
+            $reviews = $reviewModel->getByProductId($productId);
+
+
+            require_once '../Views/product_page.php';
+            exit;
+        } else {
+
+            print_r($errors);
+        }
+    }
+
+
+
 }

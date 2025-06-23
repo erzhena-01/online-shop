@@ -26,7 +26,7 @@ class OrderController extends BaseController
     public function createOrder()
     {
 
-        if ($this->check()) {
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
@@ -58,7 +58,7 @@ class OrderController extends BaseController
     public function myOrders()
     {
 
-        if ($this->check()) {
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
@@ -73,7 +73,7 @@ class OrderController extends BaseController
 public function getCheckoutForm()
     {
 
-        if ($this->check()) {
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
@@ -109,7 +109,7 @@ public function getCheckoutForm()
     public function handleCheckout()
     {
 
-        if ($this->check()) {
+        if (!$this->check()) {
             header('Location: /login');
             exit;
         }
@@ -151,7 +151,7 @@ public function getCheckoutForm()
     public function getMyOrders()
     {
 
-       if($this->check()) {
+       if(!$this->check()) {
             header('Location: /login');
             exit;
         }

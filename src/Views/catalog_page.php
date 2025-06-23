@@ -71,8 +71,10 @@
 
     .product-image {
         width: 100%;
-        height: 200px;
-        object-fit: cover;
+        height: 180px;
+        object-fit: contain;
+        padding: 10px;
+        background-color: #f9f9f9;
     }
 
     .card-body {
@@ -183,6 +185,12 @@
                             <input type="hidden" name="productId" value="<?php echo $product->getId(); ?>">
                             <button type="submit" class="quantity-button">+</button>
                         </form>
+
+                        <form method="post" action="/product" class="add-form">
+                            <input type="hidden" name="productId" value="<?php echo $product->getId(); ?>">
+                            <button type="submit" class="quantity-button">Открыть</button>
+                        </form>
+
                     </div>
 
                 </div>
